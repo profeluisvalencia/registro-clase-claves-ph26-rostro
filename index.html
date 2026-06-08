@@ -209,7 +209,6 @@ footer p{font-size:12px;color:var(--muted);letter-spacing:1px;}
     </div>
     <div class="form-wrap">
       <input type="text" id="nombre-hero" placeholder="Tu nombre" required>
-      <input type="email" id="correo-hero" placeholder="Tu correo electrónico" required>
       <button class="btn-register" onclick="registrar('hero')">QUIERO MI LUGAR →</button>
       <p class="form-note">Acceso gratuito · Solo para participantes registrados en el proceso PH 2026</p>
     </div>
@@ -311,7 +310,6 @@ footer p{font-size:12px;color:var(--muted);letter-spacing:1px;}
     </div>
     <div class="form-wrap">
       <input type="text" id="nombre-final" placeholder="Tu nombre" required>
-      <input type="email" id="correo-final" placeholder="Tu correo electrónico" required>
       <button class="btn-register" onclick="registrar('final')">ASEGURAR MI LUGAR →</button>
       <p class="form-note">Acceso gratuito · Sin spam · Solo el acceso al grupo</p>
     </div>
@@ -335,19 +333,18 @@ const WA_NUMBER = '522286070653';
 const KEYWORD = 'CLAVESPH26';
 const WEBINAR_NAME = 'Las Claves para Ganar la Promoción Horizontal con el Profe Luis Valencia el Sábado 13 de junio';
 
-function validar(nombre,correo){
+function validar(nombre){
   if(!nombre||nombre.trim().length<2){alert('Por favor escribe tu nombre.');return false;}
-  if(!correo||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)){alert('Por favor escribe un correo válido.');return false;}
   return true;
 }
 function registrar(source){
   var nombre=document.getElementById('nombre-'+source).value.trim();
-  var correo=document.getElementById('correo-'+source).value.trim();
-  if(!validar(nombre,correo))return;
+  var correo='';
+  if(!nombre||nombre.trim().length<2){alert('Por favor escribe tu nombre.');return;}
   if(typeof fbq!=='undefined')fbq('track','Lead',{content_name:'Webinar Claves PH 2026'});
   var ahora=new Date().toLocaleString('es-MX',{timeZone:'America/Mexico_City'});
-  guardarRegistro(nombre,correo,ahora);
-  var mensaje=encodeURIComponent('Hola, soy '+nombre+', mi correo es '+correo+' y quiero participar en la clase '+WEBINAR_NAME+'. '+KEYWORD);
+  guardarRegistro(nombre,'',ahora);
+  var mensaje=encodeURIComponent('Hola, soy '+nombre+' y quiero participar en la clase '+WEBINAR_NAME+'. '+KEYWORD);
   window.open('https://wa.me/'+WA_NUMBER+'?text='+mensaje,'_blank');
 }
 function guardarRegistro(nombre,correo,fecha){
