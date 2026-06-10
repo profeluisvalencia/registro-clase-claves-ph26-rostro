@@ -14,6 +14,81 @@ t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
 document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init', '681258031361374');
 fbq('track', 'PageView');
+
+// Spaces counter
+var SPACES_START_TIME = new Date('2026-06-10T17:25:00-06:00').getTime();
+var SPACES_START = 193;
+var SPACES_END = 35;
+var SPACES_DURATION = new Date('2026-06-13T10:06:00-06:00').getTime() - SPACES_START_TIME;
+
+function getBaseSpaces(){
+  var elapsed = Date.now() - SPACES_START_TIME;
+  if(elapsed < 0) return SPACES_START;
+  var progress = Math.min(elapsed / SPACES_DURATION, 1);
+  var dropped = Math.floor(progress * (SPACES_START - SPACES_END));
+  return SPACES_START - dropped;
+}
+
+function updateSpacesBar(spaces){
+  var total = 750;
+  var filled = ((total - spaces) / total) * 100;
+  var bar = document.getElementById('spaces-bar');
+  if(bar) bar.style.width = filled + '%';
+}
+
+function flashSpaces(){
+  var el = document.getElementById('spaces-num');
+  if(!el) return;
+  el.classList.add('flash');
+  setTimeout(function(){ el.classList.remove('flash'); }, 400);
+}
+
+function setSpaces(n){
+  var el = document.getElementById('spaces-num');
+  if(el) el.textContent = n;
+  updateSpacesBar(n);
+}
+
+// Initial display
+var baseSpaces = getBaseSpaces();
+setSpaces(baseSpaces);
+
+// Fast drops in first 30 seconds (3 drops: at 3s, 11s, 24s)
+var fastDrops = [3000, 11000, 24000];
+var currentSpaces = baseSpaces;
+fastDrops.forEach(function(delay){
+  setTimeout(function(){
+    currentSpaces--;
+    setSpaces(currentSpaces);
+    flashSpaces();
+  }, delay);
+});
+
+// Slow irregular drops after 30 seconds
+var slowIntervals = [420000, 780000, 1380000, 660000, 900000, 540000, 1020000, 720000, 480000, 840000];
+var slowIdx = 0;
+function scheduleNextDrop(){
+  if(slowIdx >= slowIntervals.length) slowIdx = 0;
+  var delay = slowIntervals[slowIdx++];
+  setTimeout(function(){
+    currentSpaces = Math.max(getBaseSpaces(), currentSpaces - 1);
+    setSpaces(currentSpaces);
+    flashSpaces();
+    scheduleNextDrop();
+  }, delay);
+}
+setTimeout(scheduleNextDrop, 30000);
+
+
+function toggleFaq(btn){
+  var icon = btn.querySelector('.faq-icon');
+  var answer = btn.nextElementSibling;
+  var isOpen = answer.classList.contains('open');
+  document.querySelectorAll('.faq-a').forEach(function(a){ a.classList.remove('open'); });
+  document.querySelectorAll('.faq-icon').forEach(function(i){ i.classList.remove('open'); });
+  if(!isOpen){ answer.classList.add('open'); icon.classList.add('open'); }
+}
+
 </script>
 <noscript><img height="1" width="1" style="display:none"
 src="https://www.facebook.com/tr?id=681258031361374&ev=PageView&noscript=1"/></noscript>
@@ -75,7 +150,22 @@ h1 em{color:var(--neon);font-style:normal;display:block;}
 .date-bar-text{font-size:15px;color:var(--white);font-weight:500;}
 .date-bar-text span{color:var(--neon);}
 
-/* COUNTDOWN */
+
+  .spaces-counter{background:rgba(0,0,0,0.6);border:1px solid rgba(189,255,0,0.3);padding:12px 16px;backdrop-filter:blur(8px);}
+  .spaces-live{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .spaces-live span:last-child{font-size:10px;letter-spacing:3px;color:#ff4444;font-weight:700;}
+  .live-dot{width:8px;height:8px;background:#ff4444;border-radius:50%;position:relative;flex-shrink:0;}
+  .live-dot::before{content:'';position:absolute;inset:-3px;background:rgba(255,68,68,0.4);border-radius:50%;animation:livepulse 1.5s ease-out infinite;}
+  .live-dot::after{content:'';position:absolute;inset:-6px;background:rgba(255,68,68,0.15);border-radius:50%;animation:livepulse 1.5s ease-out infinite 0.3s;}
+  @keyframes livepulse{0%{transform:scale(1);opacity:1;}100%{transform:scale(2.5);opacity:0;}}
+  .spaces-text{font-size:14px;color:var(--white);font-weight:500;margin-bottom:8px;}
+  .spaces-num{color:var(--neon);font-family:'Bebas Neue',sans-serif;font-size:20px;transition:all 0.3s;}
+  .spaces-num.flash{color:#ff4444;transform:scale(1.2);}
+  .spaces-bar-wrap{background:rgba(255,255,255,0.1);height:6px;border-radius:3px;overflow:hidden;}
+  .spaces-bar{height:100%;background:linear-gradient(90deg,var(--neon),#ff4444);border-radius:3px;transition:width 0.8s ease;}
+  .social-proof{font-size:12px;color:rgba(255,255,255,0.6);text-align:center;margin-top:4px;}
+
+  /* COUNTDOWN */
 .countdown-wrap{background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.15);padding:20px;text-align:center;backdrop-filter:blur(8px);}
 .countdown-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
 .countdown-timer{display:flex;justify-content:center;gap:12px;align-items:center;}
@@ -168,7 +258,18 @@ footer p{font-size:12px;color:var(--muted);letter-spacing:1px;}
   .instructor-photo{height:100%;min-height:560px;}
 }
 
-.fade-up{opacity:0;transform:translateY(30px);transition:opacity 0.6s ease,transform 0.6s ease;}
+
+  .faq-list{display:flex;flex-direction:column;}
+  .faq-item{border-bottom:1px solid #1a1a1a;}
+  .faq-q{width:100%;background:none;border:none;padding:20px 0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;color:#f5f5f5;text-align:left;gap:16px;}
+  .faq-q:hover{color:#BDFF00;}
+  .faq-icon{font-size:22px;color:#BDFF00;flex-shrink:0;transition:transform 0.3s;}
+  .faq-icon.open{transform:rotate(45deg);}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height 0.4s ease;}
+  .faq-a.open{max-height:300px;}
+  .faq-a p{font-size:14px;color:#888;line-height:1.8;padding-bottom:20px;font-weight:300;}
+
+  .fade-up{opacity:0;transform:translateY(30px);transition:opacity 0.6s ease,transform 0.6s ease;}
 .fade-up.visible{opacity:1;transform:translateY(0);}
 </style>
 </head>
@@ -193,13 +294,6 @@ footer p{font-size:12px;color:var(--muted);letter-spacing:1px;}
       <div class="date-bar-icon">📅</div>
       <div class="date-bar-text">Sábado <span>13 de junio</span> · <span>10:06 AM</span> hora CDMX · Clase en vivo por WhatsApp</div>
     </div>
-    <div class="form-wrap">
-      <input type="text" id="nombre-hero" placeholder="Tu nombre" required>
-      <button class="btn-register" onclick="registrar('hero')">QUIERO MI LUGAR →</button>
-      <p class="form-note">Acceso gratuito · Solo para participantes registrados en el proceso PH 2026</p>
-    </div>
-    <p class="sub">Aprende exactamente <strong>qué estudiar, cómo responder y qué cambió</strong> en el nuevo examen de Promoción Horizontal 2026 — antes de que sea tarde.</p>
-    <p class="para-quien">Para <strong>docentes, directivos, ATP y supervisores</strong> de educación básica registrados al proceso de Promoción Horizontal USICAMM 2026.</p>
     <div class="countdown-wrap">
       <p class="countdown-label">La clase comienza en</p>
       <div class="countdown-timer">
@@ -212,6 +306,19 @@ footer p{font-size:12px;color:var(--muted);letter-spacing:1px;}
         <div class="countdown-unit"><span class="countdown-num" id="cd-secs-hero">00</span><span class="countdown-sublabel">Segundos</span></div>
       </div>
     </div>
+    <div class="form-wrap">
+      <input type="text" id="nombre-hero" placeholder="Tu nombre" required>
+      <div class="spaces-counter">
+        <div class="spaces-live"><span class="live-dot"></span><span>REGISTRO EN VIVO</span></div>
+        <div class="spaces-text">Solo quedan <span id="spaces-num" class="spaces-num">193</span> accesos gratuitos</div>
+        <div class="spaces-bar-wrap"><div class="spaces-bar" id="spaces-bar"></div></div>
+      </div>
+      <button class="btn-register" onclick="registrar('hero')">ENTRAR AL GRUPO DE LA CLASE →</button>
+      <p class="form-note">Acceso gratuito · Solo para participantes registrados en el proceso PH 2026</p>
+      <p class="social-proof">⚡ +555 maestros ya están dentro</p>
+    </div>
+    <p class="sub">Aprende exactamente <strong>qué estudiar, cómo responder y qué cambió</strong> en el nuevo examen de Promoción Horizontal 2026 — antes de que sea tarde.</p>
+    <p class="para-quien">Para <strong>docentes, directivos, ATP y supervisores</strong> de educación básica registrados al proceso de Promoción Horizontal USICAMM 2026.</p>
   </div>
 </section>
 
@@ -256,6 +363,21 @@ footer p{font-size:12px;color:var(--muted);letter-spacing:1px;}
     </div>
   </div>
 </section>
+
+<div class="section-divider"></div>
+
+<div class="countdown-wrap" style="background:#0a0a0a;border:none;border-top:1px solid #222;border-bottom:1px solid #222;">
+  <p class="countdown-label">La clase comienza en</p>
+  <div class="countdown-timer">
+    <div class="countdown-unit"><span class="countdown-num" id="cd-days-mid">00</span><span class="countdown-sublabel">Días</span></div>
+    <div class="countdown-sep">:</div>
+    <div class="countdown-unit"><span class="countdown-num" id="cd-hours-mid">00</span><span class="countdown-sublabel">Horas</span></div>
+    <div class="countdown-sep">:</div>
+    <div class="countdown-unit"><span class="countdown-num" id="cd-mins-mid">00</span><span class="countdown-sublabel">Minutos</span></div>
+    <div class="countdown-sep">:</div>
+    <div class="countdown-unit"><span class="countdown-num" id="cd-secs-mid">00</span><span class="countdown-sublabel">Segundos</span></div>
+  </div>
+</div>
 
 <div class="section-divider"></div>
 
@@ -310,8 +432,69 @@ footer p{font-size:12px;color:var(--muted);letter-spacing:1px;}
     </div>
     <div class="form-wrap">
       <input type="text" id="nombre-final" placeholder="Tu nombre" required>
-      <button class="btn-register" onclick="registrar('final')">ASEGURAR MI LUGAR →</button>
+      <button class="btn-register" onclick="registrar('final')">ENTRAR AL GRUPO DE LA CLASE →</button>
       <p class="form-note">Acceso gratuito · Sin spam · Solo el acceso al grupo</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- FAQ -->
+<section style="padding:80px 24px;background:#0a0a0a;">
+  <div style="max-width:640px;margin:0 auto;">
+    <div style="font-size:11px;letter-spacing:4px;text-transform:uppercase;color:#BDFF00;margin-bottom:40px;display:flex;align-items:center;gap:12px;font-weight:600;">Preguntas frecuentes<span style="flex:1;height:1px;background:#2a2a2a;display:block;"></span></div>
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          ¿Para quién es esta clase?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <p>Para docentes, directivos, ATP y supervisores de educación básica que tienen registro en el proceso de Promoción Horizontal USICAMM 2026.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          ¿Para quién NO es?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <p>Para quienes participan en Promoción Vertical, Incremento de Horas, Admisión Docente en Educación Básica o Media Superior, ya ganaste la promoción anteriormente y buscas el segundo nivel, o no tienes registro vigente para el proceso de Promoción Horizontal USICAMM 2026 en Educación Básica.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          ¿Tiene costo la clase del sábado?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <p>No. La clase es completamente gratuita. Solo necesitas registrarte aquí y entrar al grupo antes de que se agoten los lugares disponibles.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          ¿Si no tengo registro en Promoción Horizontal 2026 me sirve?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <p>No. Esta clase está diseñada específicamente para quienes ya están inscritos en el proceso.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          ¿Necesito saber algo previo para aprovecharla?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          <p>No. Puedes llegar desde cero. La clase está diseñada para darte claridad sin importar en qué punto estás, ya sea que nunca hayas participado antes o que ya hayas participado y no lograste el incremento del 35% con Promoción Horizontal.</p>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -363,11 +546,15 @@ function updateCountdown(){
   var hours=Math.floor((diff%86400000)/3600000);
   var mins=Math.floor((diff%3600000)/60000);
   var secs=Math.floor((diff%60000)/1000);
-  ['hero','final'].forEach(function(s){
-    document.getElementById('cd-days-'+s).textContent=pad(days);
-    document.getElementById('cd-hours-'+s).textContent=pad(hours);
-    document.getElementById('cd-mins-'+s).textContent=pad(mins);
-    document.getElementById('cd-secs-'+s).textContent=pad(secs);
+  ['hero','final','mid'].forEach(function(s){
+    var el = document.getElementById('cd-days-'+s);
+    if(el) el.textContent=pad(days);
+    el = document.getElementById('cd-hours-'+s);
+    if(el) el.textContent=pad(hours);
+    el = document.getElementById('cd-mins-'+s);
+    if(el) el.textContent=pad(mins);
+    el = document.getElementById('cd-secs-'+s);
+    if(el) el.textContent=pad(secs);
   });
 }
 updateCountdown();
