@@ -46,7 +46,11 @@ function flashSpaces(){
 function setSpaces(n){
   var el = document.getElementById('spaces-num');
   if(el) el.textContent = n;
+  var el2 = document.getElementById('spaces-num-final');
+  if(el2) el2.textContent = n;
   updateSpacesBar(n);
+  var bar2 = document.getElementById('spaces-bar-final');
+  if(bar2){ var total=750; var filled=((total-n)/total)*100; bar2.style.width=filled+'%'; }
 }
 
 // Initial display
@@ -121,7 +125,7 @@ body{background:var(--white);color:var(--text);font-family:'DM Sans',sans-serif;
 
   /* TICKER */
 .ticker-wrap{background:var(--black);overflow:hidden;padding:10px 0;white-space:nowrap;}
-.ticker-inner{display:inline-block;animation:ticker 22s linear infinite;}
+.ticker-inner{display:inline-block;animation:ticker 30s linear infinite;}
 .ticker-inner span{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:3px;color:var(--neon);padding:0 32px;}
 .ticker-inner span.sep{color:#333;padding:0;}
 @keyframes ticker{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
@@ -129,7 +133,7 @@ body{background:var(--white);color:var(--text);font-family:'DM Sans',sans-serif;
 /* HERO */
 .hero{min-height:100vh;padding:0;position:relative;overflow:hidden;background:var(--black);display:flex;flex-direction:column;}
 .hero::before{display:none;}
-.hero-content{max-width:640px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:24px;position:relative;z-index:3;padding:60px 24px 80px;}
+.hero-content{max-width:640px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:16px;position:relative;z-index:3;padding:40px 24px 60px;}
 
 .badge{display:inline-flex;align-items:center;gap:8px;background:var(--neon);padding:6px 16px;border-radius:2px;width:fit-content;}
 .badge span{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--black);font-weight:600;}
@@ -145,13 +149,13 @@ h1 em{color:var(--neon);font-style:normal;display:block;}
 .para-quien{font-size:13px;color:rgba(255,255,255,0.5);font-weight:300;line-height:1.6;}
 .para-quien strong{color:rgba(255,255,255,0.75);font-weight:500;}
 
-.date-bar{display:flex;align-items:center;gap:12px;padding:16px 20px;background:var(--black);border-left:3px solid var(--neon);}
+.date-bar{display:flex;align-items:center;gap:10px;padding:11px 16px;background:var(--black);border-left:3px solid var(--neon);}
 .date-bar-icon{font-size:20px;}
-.date-bar-text{font-size:15px;color:var(--white);font-weight:500;}
+.date-bar-text{font-size:13px;color:var(--white);font-weight:500;}
 .date-bar-text span{color:var(--neon);}
 
 
-  .spaces-counter{background:rgba(0,0,0,0.6);border:1px solid rgba(189,255,0,0.3);padding:12px 16px;backdrop-filter:blur(8px);}
+  .spaces-counter{background:rgba(0,0,0,0.6);border:1px solid rgba(189,255,0,0.3);padding:8px 14px;backdrop-filter:blur(8px);}
   .spaces-live{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
   .spaces-live span:last-child{font-size:10px;letter-spacing:3px;color:#ff4444;font-weight:700;}
   .live-dot{width:8px;height:8px;background:#ff4444;border-radius:50%;position:relative;flex-shrink:0;}
@@ -166,13 +170,13 @@ h1 em{color:var(--neon);font-style:normal;display:block;}
   .social-proof{font-size:12px;color:rgba(255,255,255,0.6);text-align:center;margin-top:4px;}
 
   /* COUNTDOWN */
-.countdown-wrap{background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.15);padding:20px;text-align:center;backdrop-filter:blur(8px);}
+.countdown-wrap{background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.15);padding:14px;text-align:center;backdrop-filter:blur(8px);}
 .countdown-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
 .countdown-timer{display:flex;justify-content:center;gap:12px;align-items:center;}
 .countdown-unit{display:flex;flex-direction:column;align-items:center;gap:4px;}
-.countdown-num{font-family:'Bebas Neue',sans-serif;font-size:42px;color:var(--neon);line-height:1;min-width:52px;text-align:center;}
+.countdown-num{font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--neon);line-height:1;min-width:44px;text-align:center;}
 .countdown-sublabel{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
-.countdown-sep{font-family:'Bebas Neue',sans-serif;font-size:36px;color:rgba(255,255,255,0.2);line-height:1;}
+.countdown-sep{font-family:'Bebas Neue',sans-serif;font-size:28px;color:rgba(255,255,255,0.2);line-height:1;}
 
 /* FORM */
 .form-wrap{display:flex;flex-direction:column;gap:12px;}
@@ -432,6 +436,11 @@ footer p{font-size:12px;color:var(--muted);letter-spacing:1px;}
     </div>
     <div class="form-wrap">
       <input type="text" id="nombre-final" placeholder="Tu nombre" required>
+      <div class="spaces-counter">
+        <div class="spaces-live"><span class="live-dot"></span><span>REGISTRO EN VIVO</span></div>
+        <div class="spaces-text">Solo quedan <span id="spaces-num-final" class="spaces-num">193</span> accesos gratuitos</div>
+        <div class="spaces-bar-wrap"><div class="spaces-bar" id="spaces-bar-final"></div></div>
+      </div>
       <button class="btn-register" onclick="registrar('final')">ENTRAR AL GRUPO DE LA CLASE →</button>
       <p class="form-note">Acceso gratuito · Sin spam · Solo el acceso al grupo</p>
     </div>
