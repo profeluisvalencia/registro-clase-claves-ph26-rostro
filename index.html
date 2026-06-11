@@ -54,9 +54,8 @@ function setSpaces(n){
 }
 
 // Initial display
-var baseSpaces = getBaseSpaces();
+var baseSpaces = window._initSpaces || getBaseSpaces();
 setSpaces(baseSpaces);
-
 // Fast drops in first 30 seconds (3 drops: at 3s, 11s, 24s)
 var fastDrops = [3000, 11000, 24000];
 var currentSpaces = baseSpaces;
@@ -276,6 +275,17 @@ footer p{font-size:12px;color:var(--muted);letter-spacing:1px;}
   .fade-up{opacity:0;transform:translateY(30px);transition:opacity 0.6s ease,transform 0.6s ease;}
 .fade-up.visible{opacity:1;transform:translateY(0);}
 </style>
+<script>
+(function(){
+  var ST=new Date('2026-06-10T23:25:00Z').getTime();
+  var EN=new Date('2026-06-13T16:06:00Z').getTime();
+  var now=Date.now();
+  var prog=Math.min(Math.max((now-ST)/(EN-ST),0),1);
+  var n=Math.round(193-(prog*(193-35)));
+
+  window._initSpaces=n;
+})();
+</script>
 </head>
 <body>
 
@@ -314,7 +324,7 @@ footer p{font-size:12px;color:var(--muted);letter-spacing:1px;}
       <input type="text" id="nombre-hero" placeholder="Tu nombre" required>
       <div class="spaces-counter">
         <div class="spaces-live"><span class="live-dot"></span><span>REGISTRO EN VIVO</span></div>
-        <div class="spaces-text">Solo quedan <span id="spaces-num" class="spaces-num">193</span> accesos gratuitos</div>
+        <div class="spaces-text">Solo quedan <span id="spaces-num" class="spaces-num"></span> accesos gratuitos</div>
         <div class="spaces-bar-wrap"><div class="spaces-bar" id="spaces-bar"></div></div>
       </div>
       <button class="btn-register" onclick="registrar('hero')">ENTRAR AL GRUPO DE LA CLASE →</button>
@@ -438,7 +448,7 @@ footer p{font-size:12px;color:var(--muted);letter-spacing:1px;}
       <input type="text" id="nombre-final" placeholder="Tu nombre" required>
       <div class="spaces-counter">
         <div class="spaces-live"><span class="live-dot"></span><span>REGISTRO EN VIVO</span></div>
-        <div class="spaces-text">Solo quedan <span id="spaces-num-final" class="spaces-num">193</span> accesos gratuitos</div>
+        <div class="spaces-text">Solo quedan <span id="spaces-num-final" class="spaces-num"></span> accesos gratuitos</div>
         <div class="spaces-bar-wrap"><div class="spaces-bar" id="spaces-bar-final"></div></div>
       </div>
       <button class="btn-register" onclick="registrar('final')">ENTRAR AL GRUPO DE LA CLASE →</button>
